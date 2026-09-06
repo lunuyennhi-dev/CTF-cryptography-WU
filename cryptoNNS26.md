@@ -38,13 +38,31 @@ print(f"ct = '{ct}'")
 ---
 
 ## 2. Overview & Recon 
+-Hàm lcg viết tắt của Linear Congruential Generator (Bộ sinh số giả ngẫu nhiên tuyến tính đồng dư).
+có dạng $$X_{n+1} = (a \cdot X_n + c) \bmod m$$
+Trong đó:
 
+$X_n$: số hiện tại (số giả ngẫu nhiên thứ $n$)
+$X_{n+1}$: số tiếp theo
+$a$: hệ số nhân (multiplier)
+$c$: số cộng thêm (increment / offset)
+$m$: modulus (thường là số nguyên lớn)
 
 
 ---
 
-## 3. Mathematical Proof / Analysis (Phân tích Toán học & Lý thuyết)
+## 3. Mathematical Proof / Analysis 
+- Hàm lcg sau n lần lồng hàm có dạng
+	 $X_n = \Big( a^n \cdot X_0 + c \cdot (1 + a + a^2 + \dots + a^{n-1}) \Big) \bmod m$
+- Tính nhanh a^n bằng Binary Exponentiation
+Thay vì nhân số $a$ với chính nó $n$ lần (rất chậm khi $n$ lớn), ta dùng cách nhân đôi liên tục.
+Chuyển $n$ sang nhị phân.
+Bắt đầu từ bit thấp nhất (bên phải).
+Mỗi lần:
+Nếu bit = 1 → nhân kết quả với $a$ hiện tại.
+Luôn bình phương $a$ lên để chuẩn bị cho bit tiếp theo.
 
+Lặp cho đến hết các bit.
 
 
 
@@ -62,6 +80,7 @@ a= 16843009
 c= 826366247
 m= 2**32
 ct = bytes.fromhex('85c43735b8442a69843bdc2ca0fb2d41eb548057c43b912704abdf2e27a8d8bc97017ec30b5d100498f12183c9e2ebed')
+##Hàm tính a^n bằng Binary Exponentiation
 def modpow(base, exp, mod):
 	result=1
 	base%=mod
@@ -71,6 +90,7 @@ def modpow(base, exp, mod):
 		base=(base*base)%mod
 		exp >>=1
 	return result
+##Hàm tính lcg từ A=a^n và S=(1 + a + a^2 + \dots + a^{n-1})
 def lcg(a,c,n,m,x0):
 	A=modpow(a,n,m)
 	S=0
